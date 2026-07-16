@@ -18,11 +18,9 @@ func GetMimeType(fpath string) string {
 		return "image/x-icon"
 	case ".pdf":
 		return "application/pdf"
-	case ".htm":
-	case ".html":
+	case ".htm", ".html":
 		return "text/html"
-	case ".jpeg":
-	case ".jpg":
+	case ".jpeg", ".jpg":
 		return "image/jpeg"
 	case ".png":
 		return "image/png"
@@ -40,8 +38,7 @@ func GetMimeType(fpath string) string {
 		return "font/ttf"
 	case ".md":
 		return "text/markdown; charset=UTF-8"
-	case ".map":
-	case ".json":
+	case ".map", ".json":
 		return "application/json"
 	case ".rss":
 		return "application/rss+xml"
@@ -75,8 +72,7 @@ func GetMimeType(fpath string) string {
 		return "text/x-opml"
 	case ".eot":
 		return "application/vnd.ms-fontobject"
-	case ".yaml":
-	case ".yml":
+	case ".yaml", ".yml":
 		return "text/x-yaml"
 	case ".zip":
 		return "application/zip"

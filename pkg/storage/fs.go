@@ -102,11 +102,12 @@ func (s *StorageFS) DeleteBucket(bucket Bucket) error {
 }
 
 func (s *StorageFS) GetObject(bucket Bucket, fpath string) (utils.ReadAndReaderAtCloser, *ObjectInfo, error) {
+	contentType := mime.GetMimeType(fpath)
 	objInfo := &ObjectInfo{
 		Size:         0,
 		LastModified: time.Time{},
 		ETag:         "",
-		ContentType:  "",
+		ContentType:  contentType,
 	}
 
 	dat, err := os.Open(filepath.Join(bucket.Path, fpath))
@@ -119,6 +120,8 @@ func (s *StorageFS) GetObject(bucket Bucket, fpath string) (utils.ReadAndReaderA
 		_ = dat.Close()
 		return nil, objInfo, err
 	}
+	objInfo.Size = info.Size()
+	objInfo.LastModified = info.ModTime()
 
 	etag := ""
 	// only generate etag if file is less than 10MB
@@ -141,9 +144,6 @@ func (s *StorageFS) GetObject(bucket Bucket, fpath string) (utils.ReadAndReaderA
 	}
 
 	objInfo.ETag = etag
-	objInfo.Size = info.Size()
-	objInfo.LastModified = info.ModTime()
-	objInfo.ContentType = mime.GetMimeType(fpath)
 	return dat, objInfo, nil
 }
 
