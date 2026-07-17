@@ -63,7 +63,7 @@ bp-pgs-standalone: bp-setup
 
 bp-pico: bp-setup
 	$(DOCKER_BUILDX_BUILD) ghcr.io/picosh/pico/pico-ssh:$(DOCKER_TAG) --build-arg APP=pico --target release-ssh .
-.PHONY: bp-auth
+.PHONY: bp-pico
 
 bp-bouncer: bp-setup
 	$(DOCKER_BUILDX_BUILD) ghcr.io/picosh/pico/bouncer:$(DOCKER_TAG) ./bouncer

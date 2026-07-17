@@ -27,6 +27,7 @@ zmx run caddy -d       docker buildx build --push --platform "$DOCKER_PLATFORM" 
 zmx run bouncer        docker buildx build --push --platform "$DOCKER_PLATFORM" -t "ghcr.io/picosh/pico/bouncer:$DOCKER_TAG" ./bouncer
 zmx wait "*"
 
+zmx run pico-ssh    docker buildx build --push --platform "$DOCKER_PLATFORM" -t "ghcr.io/picosh/pico/pico-ssh:$DOCKER_TAG" --build-arg APP=pico --target release-ssh .
 zmx run auth        docker buildx build --push --platform "$DOCKER_PLATFORM" -t "ghcr.io/picosh/pico/auth-web:$DOCKER_TAG" --build-arg APP=auth --target release-web .
 zmx run cdn         docker buildx build --push --platform "$DOCKER_PLATFORM" -t "ghcr.io/picosh/pico/pgs-cdn:$DOCKER_TAG" --target release-web -f Dockerfile.cdn .
 zmx run standalone  docker buildx build --push --platform "$DOCKER_PLATFORM" -t "ghcr.io/picosh/pgs:$DOCKER_TAG" --target release -f Dockerfile.standalone .
