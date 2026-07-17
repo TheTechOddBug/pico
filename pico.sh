@@ -2,8 +2,8 @@
 set -euo pipefail
 
 export ZMX_SESSION_PREFIX="${ZMX_SESSION_PREFIX:-ci.pico.}"
-JOB_ID="${PICO_CI_JOB_ID:-local}"
-EVENT_TYPE="${PICO_CI_EVENT_TYPE:-manual}"
+JOB_ID="${PICI_JOB:-local}"
+EVENT_TYPE="${PICI_EVENT:-manual}"
 
 printf "\x1b[33m[%s] running ci (event=%s)\x1b[0m\n" "$JOB_ID" "$EVENT_TYPE"
 
@@ -14,7 +14,7 @@ zmx run test docker run -t --rm -v /var/run/docker.sock:/var/run/docker.sock -e 
 
 printf "\x1b[32msuccess tests!\x1b[0m\n"
 
-if [ "$EVENT_TYPE" != "release" ]; then
+if [ "$EVENT_TYPE" != "git.tag" ]; then
   exit 0
 fi
 
