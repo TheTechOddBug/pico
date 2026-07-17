@@ -190,7 +190,7 @@ func mustInsertPost(t *testing.T, post *db.Post) *db.Post {
 func TestRegisterUser_Success(t *testing.T) {
 	cleanupTestData(t)
 
-	user, err := testDB.RegisterUser("testuser", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI testkey", "test comment")
+	user, err := testDB.RegisterUser("testuser", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI testkey", "test comment", "")
 	if err != nil {
 		t.Fatalf("RegisterUser failed: %v", err)
 		return
@@ -210,12 +210,12 @@ func TestRegisterUser_Success(t *testing.T) {
 func TestRegisterUser_DuplicateName(t *testing.T) {
 	cleanupTestData(t)
 
-	_, err := testDB.RegisterUser("duplicateuser", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI key1", "comment1")
+	_, err := testDB.RegisterUser("duplicateuser", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI key1", "comment1", "")
 	if err != nil {
 		t.Fatalf("first RegisterUser failed: %v", err)
 	}
 
-	_, err = testDB.RegisterUser("duplicateuser", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI key2", "comment2")
+	_, err = testDB.RegisterUser("duplicateuser", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI key2", "comment2", "")
 	if err == nil {
 		t.Error("expected error for duplicate name, got nil")
 	}
@@ -224,7 +224,7 @@ func TestRegisterUser_DuplicateName(t *testing.T) {
 func TestRegisterUser_DeniedName(t *testing.T) {
 	cleanupTestData(t)
 
-	_, err := testDB.RegisterUser("admin", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI adminkey", "comment")
+	_, err := testDB.RegisterUser("admin", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI adminkey", "comment", "")
 	if err == nil {
 		t.Error("expected error for denied name 'admin', got nil")
 	}
@@ -233,7 +233,7 @@ func TestRegisterUser_DeniedName(t *testing.T) {
 func TestRegisterUser_InvalidName(t *testing.T) {
 	cleanupTestData(t)
 
-	_, err := testDB.RegisterUser("user@invalid", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI invalidkey", "comment")
+	_, err := testDB.RegisterUser("user@invalid", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI invalidkey", "comment", "")
 	if err == nil {
 		t.Error("expected error for invalid name, got nil")
 	}
@@ -242,7 +242,7 @@ func TestRegisterUser_InvalidName(t *testing.T) {
 func TestFindUser(t *testing.T) {
 	cleanupTestData(t)
 
-	created, err := testDB.RegisterUser("findme", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI findmekey", "comment")
+	created, err := testDB.RegisterUser("findme", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI findmekey", "comment", "")
 	if err != nil {
 		t.Fatalf("RegisterUser failed: %v", err)
 	}
@@ -259,7 +259,7 @@ func TestFindUser(t *testing.T) {
 func TestFindUserByName(t *testing.T) {
 	cleanupTestData(t)
 
-	_, err := testDB.RegisterUser("nameduser", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI namedkey", "comment")
+	_, err := testDB.RegisterUser("nameduser", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI namedkey", "comment", "")
 	if err != nil {
 		t.Fatalf("RegisterUser failed: %v", err)
 	}
@@ -277,7 +277,7 @@ func TestFindUserByPubkey(t *testing.T) {
 	cleanupTestData(t)
 
 	pubkey := "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI pubkeyuser"
-	_, err := testDB.RegisterUser("pubkeyuser", pubkey, "comment")
+	_, err := testDB.RegisterUser("pubkeyuser", pubkey, "comment", "")
 	if err != nil {
 		t.Fatalf("RegisterUser failed: %v", err)
 	}
@@ -295,7 +295,7 @@ func TestFindUserByKey(t *testing.T) {
 	cleanupTestData(t)
 
 	pubkey := "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI forkeyfind"
-	_, err := testDB.RegisterUser("forkeyfind", pubkey, "comment")
+	_, err := testDB.RegisterUser("forkeyfind", pubkey, "comment", "")
 	if err != nil {
 		t.Fatalf("RegisterUser failed: %v", err)
 	}
@@ -312,8 +312,8 @@ func TestFindUserByKey(t *testing.T) {
 func TestFindUsers(t *testing.T) {
 	cleanupTestData(t)
 
-	_, _ = testDB.RegisterUser("user1", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI user1key", "comment")
-	_, _ = testDB.RegisterUser("user2", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI user2key", "comment")
+	_, _ = testDB.RegisterUser("user1", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI user1key", "comment", "")
+	_, _ = testDB.RegisterUser("user2", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI user2key", "comment", "")
 
 	users, err := testDB.FindUsers()
 	if err != nil {
@@ -329,7 +329,7 @@ func TestFindUsers(t *testing.T) {
 func TestInsertPublicKey_Success(t *testing.T) {
 	cleanupTestData(t)
 
-	user, err := testDB.RegisterUser("keyowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI keyowner1", "comment")
+	user, err := testDB.RegisterUser("keyowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI keyowner1", "comment", "")
 	if err != nil {
 		t.Fatalf("RegisterUser failed: %v", err)
 	}
@@ -351,7 +351,7 @@ func TestInsertPublicKey_Success(t *testing.T) {
 func TestInsertPublicKey_Duplicate(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("dupkeyowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI dupkey", "comment")
+	user, _ := testDB.RegisterUser("dupkeyowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI dupkey", "comment", "")
 
 	err := testDB.InsertPublicKey(user.ID, "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI dupkey", "same key")
 	if err == nil {
@@ -362,7 +362,7 @@ func TestInsertPublicKey_Duplicate(t *testing.T) {
 func TestUpdatePublicKey(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("updatekeyowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI updatekeyowner", "original")
+	user, _ := testDB.RegisterUser("updatekeyowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI updatekeyowner", "original", "")
 
 	updated, err := testDB.UpdatePublicKey(user.PublicKey.ID, "new-name")
 	if err != nil {
@@ -376,7 +376,7 @@ func TestUpdatePublicKey(t *testing.T) {
 func TestFindKeysByUser(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("multikeyowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI multikeyowner1", "key1")
+	user, _ := testDB.RegisterUser("multikeyowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI multikeyowner1", "key1", "")
 	_ = testDB.InsertPublicKey(user.ID, "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI multikeyowner2", "key2")
 
 	keys, err := testDB.FindKeysByUser(user)
@@ -391,7 +391,7 @@ func TestFindKeysByUser(t *testing.T) {
 func TestRemoveKeys(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("removekeyowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI removekeyowner", "key1")
+	user, _ := testDB.RegisterUser("removekeyowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI removekeyowner", "key1", "")
 	_ = testDB.InsertPublicKey(user.ID, "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI removekeyowner2", "key2")
 
 	keys, _ := testDB.FindKeysByUser(user)
@@ -415,7 +415,7 @@ func TestRemoveKeys(t *testing.T) {
 func TestInsertToken(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("tokenowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI tokenowner", "comment")
+	user, _ := testDB.RegisterUser("tokenowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI tokenowner", "comment", "")
 
 	token, err := testDB.InsertToken(user.ID, "my-token")
 	if err != nil {
@@ -429,7 +429,7 @@ func TestInsertToken(t *testing.T) {
 func TestUpsertToken(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("upserttokenowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI upserttokenowner", "comment")
+	user, _ := testDB.RegisterUser("upserttokenowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI upserttokenowner", "comment", "")
 
 	token1, err := testDB.UpsertToken(user.ID, "upsert-token")
 	if err != nil {
@@ -449,7 +449,7 @@ func TestUpsertToken(t *testing.T) {
 func TestFindTokensByUser(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("tokensowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI tokensowner", "comment")
+	user, _ := testDB.RegisterUser("tokensowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI tokensowner", "comment", "")
 	_, _ = testDB.InsertToken(user.ID, "token1")
 	_, _ = testDB.InsertToken(user.ID, "token2")
 
@@ -465,7 +465,7 @@ func TestFindTokensByUser(t *testing.T) {
 func TestFindUserByToken_Valid(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("validtokenowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI validtokenowner", "comment")
+	user, _ := testDB.RegisterUser("validtokenowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI validtokenowner", "comment", "")
 	token, _ := testDB.InsertToken(user.ID, "valid-token")
 
 	found, err := testDB.FindUserByToken(token)
@@ -480,7 +480,7 @@ func TestFindUserByToken_Valid(t *testing.T) {
 func TestFindUserByToken_Expired(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("expiredtokenowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI expiredtokenowner", "comment")
+	user, _ := testDB.RegisterUser("expiredtokenowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI expiredtokenowner", "comment", "")
 	token, _ := testDB.InsertToken(user.ID, "expired-token")
 
 	_, err := testDB.Db.Exec("UPDATE tokens SET expires_at = NOW() - INTERVAL '1 day' WHERE token = $1", token)
@@ -497,7 +497,7 @@ func TestFindUserByToken_Expired(t *testing.T) {
 func TestRemoveToken(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("removetokenowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI removetokenowner", "comment")
+	user, _ := testDB.RegisterUser("removetokenowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI removetokenowner", "comment", "")
 	_, _ = testDB.InsertToken(user.ID, "remove-token")
 
 	tokens, _ := testDB.FindTokensByUser(user.ID)
@@ -521,7 +521,7 @@ func TestRemoveToken(t *testing.T) {
 func TestInsertPost(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("postowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI postowner", "comment")
+	user, _ := testDB.RegisterUser("postowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI postowner", "comment", "")
 
 	now := time.Now()
 	post := &db.Post{
@@ -552,7 +552,7 @@ func TestInsertPost(t *testing.T) {
 func TestUpdatePost(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("updatepostowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI updatepostowner", "comment")
+	user, _ := testDB.RegisterUser("updatepostowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI updatepostowner", "comment", "")
 
 	now := time.Now()
 	post := mustInsertPost(t, &db.Post{
@@ -580,7 +580,7 @@ func TestUpdatePost(t *testing.T) {
 func TestRemovePosts(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("removepostowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI removepostowner", "comment")
+	user, _ := testDB.RegisterUser("removepostowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI removepostowner", "comment", "")
 
 	post := mustInsertPost(t, &db.Post{
 		UserID:   user.ID,
@@ -604,7 +604,7 @@ func TestRemovePosts(t *testing.T) {
 func TestFindPost(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("findpostowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI findpostowner", "comment")
+	user, _ := testDB.RegisterUser("findpostowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI findpostowner", "comment", "")
 
 	created := mustInsertPost(t, &db.Post{
 		UserID:   user.ID,
@@ -626,7 +626,7 @@ func TestFindPost(t *testing.T) {
 func TestFindPostWithFilename(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("filenamepostowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI filenamepostowner", "comment")
+	user, _ := testDB.RegisterUser("filenamepostowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI filenamepostowner", "comment", "")
 
 	_ = mustInsertPost(t, &db.Post{
 		UserID:   user.ID,
@@ -648,7 +648,7 @@ func TestFindPostWithFilename(t *testing.T) {
 func TestFindPostWithSlug(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("slugpostowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI slugpostowner", "comment")
+	user, _ := testDB.RegisterUser("slugpostowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI slugpostowner", "comment", "")
 
 	_ = mustInsertPost(t, &db.Post{
 		UserID:   user.ID,
@@ -670,7 +670,7 @@ func TestFindPostWithSlug(t *testing.T) {
 func TestFindPosts(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("postsowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI postsowner", "comment")
+	user, _ := testDB.RegisterUser("postsowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI postsowner", "comment", "")
 
 	_ = mustInsertPost(t, &db.Post{UserID: user.ID, Filename: "post1.md", Slug: "post1", Title: "Post 1", Space: "prose"})
 	_ = mustInsertPost(t, &db.Post{UserID: user.ID, Filename: "post2.md", Slug: "post2", Title: "Post 2", Space: "prose"})
@@ -687,7 +687,7 @@ func TestFindPosts(t *testing.T) {
 func TestFindPostsByUser(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("userpostsowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI userpostsowner", "comment")
+	user, _ := testDB.RegisterUser("userpostsowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI userpostsowner", "comment", "")
 	now := time.Now()
 
 	_ = mustInsertPost(t, &db.Post{UserID: user.ID, Filename: "userpost1.md", Slug: "userpost1", Title: "User Post 1", Space: "prose", PublishAt: &now})
@@ -706,7 +706,7 @@ func TestFindPostsByUser(t *testing.T) {
 func TestFindAllPostsByUser(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("allpostsowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI allpostsowner", "comment")
+	user, _ := testDB.RegisterUser("allpostsowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI allpostsowner", "comment", "")
 
 	_ = mustInsertPost(t, &db.Post{UserID: user.ID, Filename: "allpost1.md", Slug: "allpost1", Title: "All Post 1", Space: "prose"})
 	_ = mustInsertPost(t, &db.Post{UserID: user.ID, Filename: "allpost2.md", Slug: "allpost2", Title: "All Post 2", Space: "prose"})
@@ -723,7 +723,7 @@ func TestFindAllPostsByUser(t *testing.T) {
 func TestFindUsersWithPost(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("feedspostowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI feedspostowner", "comment")
+	user, _ := testDB.RegisterUser("feedspostowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI feedspostowner", "comment", "")
 
 	_ = mustInsertPost(t, &db.Post{UserID: user.ID, Filename: "feed.txt", Slug: "feed", Title: "Feed", Space: "feeds"})
 
@@ -739,7 +739,7 @@ func TestFindUsersWithPost(t *testing.T) {
 func TestFindExpiredPosts(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("expiredpostowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI expiredpostowner", "comment")
+	user, _ := testDB.RegisterUser("expiredpostowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI expiredpostowner", "comment", "")
 
 	expired := time.Now().Add(-24 * time.Hour)
 	_ = mustInsertPost(t, &db.Post{
@@ -763,7 +763,7 @@ func TestFindExpiredPosts(t *testing.T) {
 func TestFindPostsByFeed(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("feedowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI feedowner", "comment")
+	user, _ := testDB.RegisterUser("feedowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI feedowner", "comment", "")
 
 	now := time.Now()
 	_ = mustInsertPost(t, &db.Post{UserID: user.ID, Filename: "feedpost.md", Slug: "feedpost", Title: "Feed Post", Space: "prose", PublishAt: &now})
@@ -783,7 +783,7 @@ func TestFindPostsByFeed(t *testing.T) {
 func TestReplaceTagsByPost(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("tagspostowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI tagspostowner", "comment")
+	user, _ := testDB.RegisterUser("tagspostowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI tagspostowner", "comment", "")
 	post := mustInsertPost(t, &db.Post{UserID: user.ID, Filename: "tagged.md", Slug: "tagged", Title: "Tagged", Space: "prose"})
 
 	err := testDB.ReplaceTagsByPost([]string{"tag1", "tag2"}, post.ID)
@@ -800,7 +800,7 @@ func TestReplaceTagsByPost(t *testing.T) {
 func TestFindUserPostsByTag(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("usertagowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI usertagowner", "comment")
+	user, _ := testDB.RegisterUser("usertagowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI usertagowner", "comment", "")
 	now := time.Now()
 	post := mustInsertPost(t, &db.Post{UserID: user.ID, Filename: "usertag.md", Slug: "usertag", Title: "User Tag", Space: "prose", PublishAt: &now})
 	_ = testDB.ReplaceTagsByPost([]string{"mytag"}, post.ID)
@@ -818,7 +818,7 @@ func TestFindUserPostsByTag(t *testing.T) {
 func TestFindPostsByTag(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("tagsearchowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI tagsearchowner", "comment")
+	user, _ := testDB.RegisterUser("tagsearchowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI tagsearchowner", "comment", "")
 	now := time.Now()
 	post := mustInsertPost(t, &db.Post{UserID: user.ID, Filename: "tagsearch.md", Slug: "tagsearch", Title: "Tag Search", Space: "prose", PublishAt: &now})
 	_ = testDB.ReplaceTagsByPost([]string{"searchtag"}, post.ID)
@@ -836,7 +836,7 @@ func TestFindPostsByTag(t *testing.T) {
 func TestFindPopularTags(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("populartagowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI populartagowner", "comment")
+	user, _ := testDB.RegisterUser("populartagowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI populartagowner", "comment", "")
 	post1 := mustInsertPost(t, &db.Post{UserID: user.ID, Filename: "pop1.md", Slug: "pop1", Title: "Pop 1", Space: "prose"})
 	post2 := mustInsertPost(t, &db.Post{UserID: user.ID, Filename: "pop2.md", Slug: "pop2", Title: "Pop 2", Space: "prose"})
 	_ = testDB.ReplaceTagsByPost([]string{"popular"}, post1.ID)
@@ -856,7 +856,7 @@ func TestFindPopularTags(t *testing.T) {
 func TestReplaceAliasesByPost(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("aliasowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI aliasowner", "comment")
+	user, _ := testDB.RegisterUser("aliasowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI aliasowner", "comment", "")
 	post := mustInsertPost(t, &db.Post{UserID: user.ID, Filename: "aliased.md", Slug: "aliased", Title: "Aliased", Space: "prose"})
 
 	err := testDB.ReplaceAliasesByPost([]string{"alias1", "alias2"}, post.ID)
@@ -868,7 +868,7 @@ func TestReplaceAliasesByPost(t *testing.T) {
 func TestFindPostWithSlug_Alias(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("aliassearchowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI aliassearchowner", "comment")
+	user, _ := testDB.RegisterUser("aliassearchowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI aliassearchowner", "comment", "")
 	post := mustInsertPost(t, &db.Post{UserID: user.ID, Filename: "original.md", Slug: "original", Title: "Original", Space: "prose"})
 	_ = testDB.ReplaceAliasesByPost([]string{"my-alias"}, post.ID)
 
@@ -886,7 +886,7 @@ func TestFindPostWithSlug_Alias(t *testing.T) {
 func TestInsertVisit(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("visitowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI visitowner", "comment")
+	user, _ := testDB.RegisterUser("visitowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI visitowner", "comment", "")
 
 	visit := &db.AnalyticsVisits{
 		UserID:    user.ID,
@@ -907,7 +907,7 @@ func TestInsertVisit(t *testing.T) {
 func TestVisitSummary(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("summaryowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI summaryowner", "comment")
+	user, _ := testDB.RegisterUser("summaryowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI summaryowner", "comment", "")
 
 	visit := &db.AnalyticsVisits{
 		UserID:    user.ID,
@@ -937,7 +937,7 @@ func TestVisitSummary(t *testing.T) {
 func TestFindVisitSiteList(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("sitelistowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI sitelistowner", "comment")
+	user, _ := testDB.RegisterUser("sitelistowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI sitelistowner", "comment", "")
 
 	_ = testDB.InsertVisit(&db.AnalyticsVisits{
 		UserID:    user.ID,
@@ -960,7 +960,7 @@ func TestFindVisitSiteList(t *testing.T) {
 func TestVisitUrlNotFound(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("notfoundowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI notfoundowner", "comment")
+	user, _ := testDB.RegisterUser("notfoundowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI notfoundowner", "comment", "")
 
 	_ = testDB.InsertVisit(&db.AnalyticsVisits{
 		UserID:    user.ID,
@@ -989,7 +989,7 @@ func TestVisitUrlNotFound(t *testing.T) {
 func TestInsertFeature(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("featureowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI featureowner", "comment")
+	user, _ := testDB.RegisterUser("featureowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI featureowner", "comment", "")
 
 	expiresAt := time.Now().Add(365 * 24 * time.Hour)
 	feature, err := testDB.InsertFeature(user.ID, "plus", expiresAt)
@@ -1004,7 +1004,7 @@ func TestInsertFeature(t *testing.T) {
 func TestFindFeature(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("findfeatureowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI findfeatureowner", "comment")
+	user, _ := testDB.RegisterUser("findfeatureowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI findfeatureowner", "comment", "")
 	expiresAt := time.Now().Add(365 * 24 * time.Hour)
 	_, _ = testDB.InsertFeature(user.ID, "plus", expiresAt)
 
@@ -1020,7 +1020,7 @@ func TestFindFeature(t *testing.T) {
 func TestFindFeaturesByUser(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("featuresowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI featuresowner", "comment")
+	user, _ := testDB.RegisterUser("featuresowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI featuresowner", "comment", "")
 	expiresAt := time.Now().Add(365 * 24 * time.Hour)
 	_, _ = testDB.InsertFeature(user.ID, "plus", expiresAt)
 	_, _ = testDB.InsertFeature(user.ID, "pro", expiresAt)
@@ -1037,7 +1037,7 @@ func TestFindFeaturesByUser(t *testing.T) {
 func TestHasFeatureByUser(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("hasfeatureowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI hasfeatureowner", "comment")
+	user, _ := testDB.RegisterUser("hasfeatureowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI hasfeatureowner", "comment", "")
 	expiresAt := time.Now().Add(365 * 24 * time.Hour)
 	_, _ = testDB.InsertFeature(user.ID, "plus", expiresAt)
 
@@ -1055,7 +1055,7 @@ func TestHasFeatureByUser(t *testing.T) {
 func TestRemoveFeature(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("removefeatureowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI removefeatureowner", "comment")
+	user, _ := testDB.RegisterUser("removefeatureowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI removefeatureowner", "comment", "")
 	expiresAt := time.Now().Add(365 * 24 * time.Hour)
 	_, _ = testDB.InsertFeature(user.ID, "plus", expiresAt)
 
@@ -1073,7 +1073,7 @@ func TestRemoveFeature(t *testing.T) {
 func TestAddPicoPlusUser(t *testing.T) {
 	cleanupTestData(t)
 
-	_, _ = testDB.RegisterUser("picoplusowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI picoplusowner", "comment")
+	_, _ = testDB.RegisterUser("picoplusowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI picoplusowner", "comment", "")
 
 	err := testDB.AddPicoPlusUser("picoplusowner", "test@example.com", "stripe", "tx123")
 	if err != nil {
@@ -1086,7 +1086,7 @@ func TestAddPicoPlusUser(t *testing.T) {
 func TestInsertFeedItems(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("feeditemsowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI feeditemsowner", "comment")
+	user, _ := testDB.RegisterUser("feeditemsowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI feeditemsowner", "comment", "")
 	post := mustInsertPost(t, &db.Post{UserID: user.ID, Filename: "feed.txt", Slug: "feed", Title: "Feed", Space: "feeds"})
 
 	items := []*db.FeedItem{
@@ -1103,7 +1103,7 @@ func TestInsertFeedItems(t *testing.T) {
 func TestFindFeedItemsByPostID(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("findfeeditemsowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI findfeeditemsowner", "comment")
+	user, _ := testDB.RegisterUser("findfeeditemsowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI findfeeditemsowner", "comment", "")
 	post := mustInsertPost(t, &db.Post{UserID: user.ID, Filename: "findfeed.txt", Slug: "findfeed", Title: "Find Feed", Space: "feeds"})
 
 	items := []*db.FeedItem{
@@ -1125,7 +1125,7 @@ func TestFindFeedItemsByPostID(t *testing.T) {
 func TestUpsertProject(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("projectowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI projectowner", "comment")
+	user, _ := testDB.RegisterUser("projectowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI projectowner", "comment", "")
 
 	project, err := testDB.UpsertProject(user.ID, "my-project", "my-project")
 	if err != nil {
@@ -1147,7 +1147,7 @@ func TestUpsertProject(t *testing.T) {
 func TestFindProjectByName(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("findprojectowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI findprojectowner", "comment")
+	user, _ := testDB.RegisterUser("findprojectowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI findprojectowner", "comment", "")
 	_, _ = testDB.UpsertProject(user.ID, "findme-project", "findme-project")
 
 	project, err := testDB.FindProjectByName(user.ID, "findme-project")
@@ -1164,7 +1164,7 @@ func TestFindProjectByName(t *testing.T) {
 func TestFindUserStats(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("statsowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI statsowner", "comment")
+	user, _ := testDB.RegisterUser("statsowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI statsowner", "comment", "")
 	_ = mustInsertPost(t, &db.Post{UserID: user.ID, Filename: "stat.md", Slug: "stat", Title: "Stat", Space: "prose"})
 	_, _ = testDB.UpsertProject(user.ID, "stat-project", "stat-project")
 
@@ -1185,7 +1185,7 @@ func TestFindUserStats(t *testing.T) {
 func TestInsertTunsEventLog(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("tunsowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI tunsowner", "comment")
+	user, _ := testDB.RegisterUser("tunsowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI tunsowner", "comment", "")
 
 	log := &db.TunsEventLog{
 		UserId:         user.ID,
@@ -1206,7 +1206,7 @@ func TestInsertTunsEventLog(t *testing.T) {
 func TestFindTunsEventLogs(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("findtunsowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI findtunsowner", "comment")
+	user, _ := testDB.RegisterUser("findtunsowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI findtunsowner", "comment", "")
 	_ = testDB.InsertTunsEventLog(&db.TunsEventLog{
 		UserId:         user.ID,
 		ServerID:       "server-1",
@@ -1229,7 +1229,7 @@ func TestFindTunsEventLogs(t *testing.T) {
 func TestFindTunsEventLogsByAddr(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("tunsaddrowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI tunsaddrowner", "comment")
+	user, _ := testDB.RegisterUser("tunsaddrowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI tunsaddrowner", "comment", "")
 	_ = testDB.InsertTunsEventLog(&db.TunsEventLog{
 		UserId:         user.ID,
 		ServerID:       "server-1",
@@ -1254,7 +1254,7 @@ func TestFindTunsEventLogsByAddr(t *testing.T) {
 func TestInsertAccessLog(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("accesslogowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI accesslogowner", "comment")
+	user, _ := testDB.RegisterUser("accesslogowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI accesslogowner", "comment", "")
 
 	log := &db.AccessLog{
 		UserID:   user.ID,
@@ -1272,7 +1272,7 @@ func TestInsertAccessLog(t *testing.T) {
 func TestFindAccessLogs(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("findaccesslogowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI findaccesslogowner", "comment")
+	user, _ := testDB.RegisterUser("findaccesslogowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI findaccesslogowner", "comment", "")
 	_ = testDB.InsertAccessLog(&db.AccessLog{
 		UserID:   user.ID,
 		Service:  "pgs",
@@ -1293,7 +1293,7 @@ func TestFindAccessLogs(t *testing.T) {
 func TestFindPubkeysInAccessLogs(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("pubkeylogowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI pubkeylogowner", "comment")
+	user, _ := testDB.RegisterUser("pubkeylogowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI pubkeylogowner", "comment", "")
 	_ = testDB.InsertAccessLog(&db.AccessLog{
 		UserID:   user.ID,
 		Service:  "pgs",
@@ -1313,7 +1313,7 @@ func TestFindPubkeysInAccessLogs(t *testing.T) {
 func TestFindAccessLogsByPubkey(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("accessbypubkeyowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI accessbypubkeyowner", "comment")
+	user, _ := testDB.RegisterUser("accessbypubkeyowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI accessbypubkeyowner", "comment", "")
 	pubkey := "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI accessbypubkeyowner"
 	_ = testDB.InsertAccessLog(&db.AccessLog{
 		UserID:   user.ID,
@@ -1337,7 +1337,7 @@ func TestFindAccessLogsByPubkey(t *testing.T) {
 func TestPostData_JSONBRoundtrip(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("postdataowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI postdataowner", "comment")
+	user, _ := testDB.RegisterUser("postdataowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI postdataowner", "comment", "")
 
 	now := time.Now().Truncate(time.Second)
 	postData := db.PostData{
@@ -1370,7 +1370,7 @@ func TestPostData_JSONBRoundtrip(t *testing.T) {
 func TestProjectAcl_JSONBRoundtrip(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("aclowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI aclowner", "comment")
+	user, _ := testDB.RegisterUser("aclowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI aclowner", "comment", "")
 
 	project, err := testDB.UpsertProject(user.ID, "acl-project", "acl-project")
 	if err != nil {
@@ -1390,7 +1390,7 @@ func TestProjectAcl_JSONBRoundtrip(t *testing.T) {
 func TestFeedItemData_JSONBRoundtrip(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("feedjsonbowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI feedjsonbowner", "comment")
+	user, _ := testDB.RegisterUser("feedjsonbowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI feedjsonbowner", "comment", "")
 	post := mustInsertPost(t, &db.Post{UserID: user.ID, Filename: "feedjsonb.txt", Slug: "feedjsonb", Title: "Feed JSONB", Space: "feeds"})
 
 	now := time.Now().Truncate(time.Second)
@@ -1424,7 +1424,7 @@ func TestFeedItemData_JSONBRoundtrip(t *testing.T) {
 func TestFeatureFlagData_JSONBRoundtrip(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("featurejsonbowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI featurejsonbowner", "comment")
+	user, _ := testDB.RegisterUser("featurejsonbowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI featurejsonbowner", "comment", "")
 
 	err := testDB.AddPicoPlusUser("featurejsonbowner", "test@example.com", "stripe", "tx456")
 	if err != nil {
@@ -1446,7 +1446,7 @@ func TestFeatureFlagData_JSONBRoundtrip(t *testing.T) {
 func TestPaymentHistoryData_JSONBRoundtrip(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("paymentjsonbowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI paymentjsonbowner", "comment")
+	user, _ := testDB.RegisterUser("paymentjsonbowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI paymentjsonbowner", "comment", "")
 
 	err := testDB.AddPicoPlusUser("paymentjsonbowner", "payment@example.com", "stripe", "tx789")
 	if err != nil {
@@ -1468,7 +1468,7 @@ func TestPaymentHistoryData_JSONBRoundtrip(t *testing.T) {
 func TestUpsertPipeMonitor(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("pipemonitorowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI pipemonitorowner", "comment")
+	user, _ := testDB.RegisterUser("pipemonitorowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI pipemonitorowner", "comment", "")
 
 	winEnd := time.Now().Add(time.Hour)
 	err := testDB.UpsertPipeMonitor(user.ID, "test-topic", 5*time.Minute, &winEnd)
@@ -1491,7 +1491,7 @@ func TestUpsertPipeMonitor(t *testing.T) {
 func TestUpsertPipeMonitor_Update(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("pipeupdateowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI pipeupdateowner", "comment")
+	user, _ := testDB.RegisterUser("pipeupdateowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI pipeupdateowner", "comment", "")
 
 	winEnd1 := time.Now().Add(time.Hour)
 	err := testDB.UpsertPipeMonitor(user.ID, "update-topic", 5*time.Minute, &winEnd1)
@@ -1517,7 +1517,7 @@ func TestUpsertPipeMonitor_Update(t *testing.T) {
 func TestUpdatePipeMonitorLastPing(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("pipepingowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI pipepingowner", "comment")
+	user, _ := testDB.RegisterUser("pipepingowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI pipepingowner", "comment", "")
 
 	winEnd := time.Now().Add(time.Hour)
 	err := testDB.UpsertPipeMonitor(user.ID, "ping-topic", 5*time.Minute, &winEnd)
@@ -1543,7 +1543,7 @@ func TestUpdatePipeMonitorLastPing(t *testing.T) {
 func TestRemovePipeMonitor(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("piperemoveowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI piperemoveowner", "comment")
+	user, _ := testDB.RegisterUser("piperemoveowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI piperemoveowner", "comment", "")
 
 	winEnd := time.Now().Add(time.Hour)
 	err := testDB.UpsertPipeMonitor(user.ID, "remove-topic", 5*time.Minute, &winEnd)
@@ -1565,7 +1565,7 @@ func TestRemovePipeMonitor(t *testing.T) {
 func TestFindPipeMonitorByTopic_NotFound(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("pipenotfoundowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI pipenotfoundowner", "comment")
+	user, _ := testDB.RegisterUser("pipenotfoundowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI pipenotfoundowner", "comment", "")
 
 	_, err := testDB.FindPipeMonitorByTopic(user.ID, "nonexistent-topic")
 	if err == nil {
@@ -1576,7 +1576,7 @@ func TestFindPipeMonitorByTopic_NotFound(t *testing.T) {
 func TestFindPipeMonitorsByUser(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("pipemonlistowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI pipemonlistowner", "comment")
+	user, _ := testDB.RegisterUser("pipemonlistowner", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI pipemonlistowner", "comment", "")
 
 	winEnd := time.Now().Add(time.Hour)
 	_ = testDB.UpsertPipeMonitor(user.ID, "service-a", 5*time.Minute, &winEnd)
@@ -1607,7 +1607,7 @@ func TestFindPipeMonitorsByUser(t *testing.T) {
 func TestFindPipeMonitorsByUser_Empty(t *testing.T) {
 	cleanupTestData(t)
 
-	user, _ := testDB.RegisterUser("pipenomonitors", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI pipenomonitors", "comment")
+	user, _ := testDB.RegisterUser("pipenomonitors", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI pipenomonitors", "comment", "")
 
 	monitors, err := testDB.FindPipeMonitorsByUser(user.ID)
 	if err != nil {

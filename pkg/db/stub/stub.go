@@ -24,7 +24,7 @@ func NewStubDB(logger *slog.Logger) *StubDB {
 
 var errNotImpl = fmt.Errorf("not implemented")
 
-func (me *StubDB) RegisterUser(username, pubkey, comment string) (*db.User, error) {
+func (me *StubDB) RegisterUser(username, pubkey, comment, ip string) (*db.User, error) {
 	return nil, errNotImpl
 }
 

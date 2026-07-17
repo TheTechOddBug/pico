@@ -91,10 +91,25 @@ func NewDB(databaseUrl string, logger *slog.Logger) *PsqlDB {
 	return d
 }
 
-func (me *PsqlDB) RegisterUser(username, pubkey, comment string) (*db.User, error) {
+func (me *PsqlDB) shouldBlockSingup(ip string) error {
+	blocked := &db.BlockSignups{}
+	err := me.Db.Get(blocked, `SELECT * FROM block_signups WHERE ip = $1`, ip)
+	// an error in this case means the result is empty (no record found)
+	if err != nil {
+		return nil
+	}
+	return fmt.Errorf("your IP address has been blocked: %s", blocked.Reason)
+}
+
+func (me *PsqlDB) RegisterUser(username, pubkey, comment, ip string) (*db.User, error) {
 	lowerName := strings.ToLower(username)
 	valid, err := me.validateName(lowerName)
 	if !valid {
+		return nil, err
+	}
+
+	err = me.shouldBlockSingup(ip)
+	if err != nil {
 		return nil, err
 	}
 

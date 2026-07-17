@@ -2,6 +2,7 @@ package tui
 
 import (
 	"fmt"
+	"net"
 
 	"git.sr.ht/~rockorager/vaxis"
 	"git.sr.ht/~rockorager/vaxis/vxfw"
@@ -45,7 +46,9 @@ func (m *SignupPage) createAccount(name string) (*db.User, error) {
 		return nil, fmt.Errorf("name cannot be empty")
 	}
 	key := shared.KeyForKeyText(m.shared.Session.PublicKey())
-	return m.shared.Dbpool.RegisterUser(name, key, "")
+	remoteAddr := m.shared.Session.Conn.RemoteAddr().String()
+	userIp, _, _ := net.SplitHostPort(remoteAddr)
+	return m.shared.Dbpool.RegisterUser(name, key, "", userIp)
 }
 
 func (m *SignupPage) CaptureEvent(ev vaxis.Event) (vxfw.Command, error) {

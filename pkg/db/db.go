@@ -31,6 +31,13 @@ func tcast(value any) ([]byte, error) {
 	}
 }
 
+type BlockSignups struct {
+	ID        int64      `db:"id"`
+	IP        string     `db:"ip"`
+	Reason    string     `db:"reason"`
+	CreatedAt *time.Time `db:"created_at"`
+}
+
 type PublicKey struct {
 	ID        string     `json:"id" db:"id"`
 	UserID    string     `json:"user_id" db:"user_id"`
@@ -559,7 +566,7 @@ var DenyList = []string{
 }
 
 type DB interface {
-	RegisterUser(name, pubkey, comment string) (*User, error)
+	RegisterUser(name, pubkey, comment, ip string) (*User, error)
 	UpdatePublicKey(pubkeyID, name string) (*PublicKey, error)
 	InsertPublicKey(userID, pubkey, name string) error
 	FindKeysByUser(user *User) ([]*PublicKey, error)
