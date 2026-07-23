@@ -336,7 +336,7 @@ func (h *UploadAssetHandler) Write(s *pssh.SSHServerConnSession, entry *sendutil
 		return "", err
 	}
 
-	featureFlag, err := findPlusFF(h.Cfg.DB, user.ID)
+	featureFlag, err := findPlusFF(h.Cfg.DB, h.Cfg, user.ID)
 	if err != nil {
 		return "", err
 	}
