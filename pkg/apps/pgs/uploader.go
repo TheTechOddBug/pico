@@ -255,7 +255,7 @@ func (h *UploadAssetHandler) findDenylist(bucket storage.Bucket, project *db.Pro
 	return str, nil
 }
 
-func findPlusFF(dbpool pgsdb.PgsDB, userID string) (*db.FeatureFlag, error) {
+func findPlusFF(dbpool pgsdb.PgsDB, cfg *PgsConfig, userID string) (*db.FeatureFlag, error) {
 	ff, err := dbpool.FindFeature(userID, "plus")
 	if err != nil {
 		return nil, err
@@ -263,6 +263,8 @@ func findPlusFF(dbpool pgsdb.PgsDB, userID string) (*db.FeatureFlag, error) {
 	if !ff.IsValid() {
 		return nil, fmt.Errorf("your pico+ has expired")
 	}
+	ff.Data.FileMax = ff.FindFileMax(cfg.MaxAssetSize)
+	ff.Data.SpecialFileMax = ff.FindSpecialFileMax(cfg.MaxSpecialFileSize)
 	return ff, nil
 }
 
