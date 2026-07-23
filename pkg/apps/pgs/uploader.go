@@ -255,24 +255,15 @@ func (h *UploadAssetHandler) findDenylist(bucket storage.Bucket, project *db.Pro
 	return str, nil
 }
 
-func findPlusFF(dbpool pgsdb.PgsDB, cfg *PgsConfig, userID string) *db.FeatureFlag {
-	ff, _ := dbpool.FindFeature(userID, "plus")
-	// we have free tiers so users might not have a feature flag
-	// in which case we set sane defaults
-	if ff == nil {
-		ff = db.NewFeatureFlag(
-			userID,
-			"plus",
-			cfg.MaxSize,
-			cfg.MaxAssetSize,
-			cfg.MaxSpecialFileSize,
-		)
+func findPlusFF(dbpool pgsdb.PgsDB, userID string) (*db.FeatureFlag, error) {
+	ff, err := dbpool.FindFeature(userID, "plus")
+	if err != nil {
+		return nil, err
 	}
-	// this is jank
-	ff.Data.StorageMax = ff.FindStorageMax(cfg.MaxSize)
-	ff.Data.FileMax = ff.FindFileMax(cfg.MaxAssetSize)
-	ff.Data.SpecialFileMax = ff.FindSpecialFileMax(cfg.MaxSpecialFileSize)
-	return ff
+	if !ff.IsValid() {
+		return nil, fmt.Errorf("your pico+ has expired")
+	}
+	return ff, nil
 }
 
 func mtimeToTime(entry *sendutils.FileEntry) time.Time {
@@ -343,7 +334,10 @@ func (h *UploadAssetHandler) Write(s *pssh.SSHServerConnSession, entry *sendutil
 		return "", err
 	}
 
-	featureFlag := findPlusFF(h.Cfg.DB, h.Cfg, user.ID)
+	featureFlag, err := findPlusFF(h.Cfg.DB, user.ID)
+	if err != nil {
+		return "", err
+	}
 	if !featureFlag.IsValid() && pgsdb.IsProjectPrivate(projectName) {
 		return "", fmt.Errorf("private projects are only allowed for pico+ users")
 	}
